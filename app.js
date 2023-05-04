@@ -1,83 +1,37 @@
 const express = require("express");
+const PORT = 1337;
 const morgan = require("morgan");
-const postBank = require("./postBank");
-
 const app = express();
 
+// Middleware
+app.use((req, res, next) => {
+	console.log(`${req.method} ${req.path}`);
+	next();
+});
 app.use(morgan("dev"));
 app.use(express.static("public"));
 
-app.get("/", (req, res) => {
-	const posts = postBank.list();
+// To be able to accept JSON
+app.use(express.json());
 
-	const html = `<!DOCTYPE html>
-  <html>
-  <head>
-    <title>Wizard News</title>
-    <link rel="stylesheet" href="/style.css" />
-  </head>
-  <body>
-    <div class="news-list">
-      <header><img src="/logo.png"/>Wizard News</header>
-      
-      ${posts
-				.map(
-					(post) => `
-        <div class='news-item'>
-          <p><a href="/posts/${post.id}">${post.title}</a>
-            <span class="news-position">${post.id}. ▲</span>
-            ${post.title}
-            <small>(by ${post.name})</small>
-          </p>
-          <small class="news-info">
-            ${post.upvotes} upvotes | ${post.date}
-          </small>
-        </div>`
-				)
-				.join("")}
-    </div>
-  </body>
-</html>`;
+// Routes
+app.use("/api", require("./routes"));
 
-	res.send(html);
+// Catch All
+app.get("*", (req, res, next) => {
+	res.status(404).send("Oops, that endpoint doesn't exist!");
 });
 
-app.get("/posts/:id", (req, res) => {
-	const id = req.params.id;
-	const posts = postBank.find(id);
-	const html = `<!DOCTYPE html>
-  <html>
-  <head>
-    <title>Wizard News</title>
-    <link rel="stylesheet" href="/style.css" />
-  </head>
-  <body>
-    <div class="news-list">
-      <header><img src="/logo.png"/>Wizard News</header>
-      ${posts
-				.id(
-					(post) => `
-        <div class='news-item'>
-          <p>
-            <span class="news-position">${post.id}. ▲</span>
-            ${post.title}
-            <small>(by ${post.name})</small>
-          </p>
-          <small class="news-info">
-            ${post.upvotes} upvotes | ${post.date}
-          </small>
-          <small class="news-details">
-          ${post.content} details</small>
-        </div>`
-				)
-				.join("")}
-    </div>
-  </body>
-</html>`;
-	res.send(html);
+// Error Handler
+app.use((err, req, res, next) => {
+	console.error(err);
+	res.status(500);
+	res.send({
+		name: err.name,
+		message: err.message,
+		// stack: err.stack,
+	});
 });
-
-const PORT = 1337;
 
 app.listen(PORT, () => {
 	console.log(`App listening in port ${PORT}`);
