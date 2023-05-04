@@ -4,16 +4,7 @@ const app = express();
 const router = express.Router();
 const postBank = require("../postBank");
 const posts = postBank.list();
-// GET
-// router.get("/", (req, res, next) => {
-// 	console.log("hello");
-// 	try {
-// 		// throw new Error("Error fetching posts");
-// 		res.send("posts");
-// 	} catch (error) {
-// 		next(error);
-// 	}
-// });
+
 router.get("/", (req, res) => {
 	const html = `<!DOCTYPE html>
   <html>
@@ -87,24 +78,6 @@ router.get("/:id", (req, res) => {
 			});
 		}
 	} catch (error) {}
-});
-
-// bankRouter.post("/", (req, res, next) => {
-// 	try {
-// 		console.log("req.body: ", req.body);
-// 		posts.push(req.body);
-// 		res.send(posts);
-// 	} catch (error) {
-// 		next(error);
-// 	}
-// });
-
-router.get("/:id", (req, res, next) => {
-	try {
-		res.send([post]);
-	} catch (error) {
-		next(error);
-	}
 });
 
 module.exports = router;
