@@ -53,7 +53,7 @@ router.get("/:id", (req, res) => {
       <header><img src="/logo.png"/>Wizard News</header>
       <div class='news-item'>
       <p id="home"><a href="/api/posts/">Home</a>
-          <p>
+          <p id="singlepost">
             <span class="news-position">${post.id}. ▲</span>
             ${post.title}
             <small>(by ${post.name})</small>
